@@ -21,12 +21,19 @@ class MyFS : Operations
     }
     override ulong read(const(char)[] path, ubyte[] buf, ulong offset) {
         writeln("read");
-        buf = cast(ubyte[]) "XXX";
-        return 3;
+        auto file = File(root_path~'/'~path, "rb");
+        file.seek(offset);
+        file.rawRead(buf);
+        file.close();
+        return buf.length;
     }
     override int write(const(char)[] path, in ubyte[] data, ulong offset) {
         writeln("write");
-        return 0;
+        auto file = File(root_path~'/'~path, "wb");
+        file.seek(offset);
+        file.rawWrite(data);
+        file.close();
+        return cast(int) data.length; // FIXME: wrong
     }
     //override void truncate(const(char)[] path, ulong length);
     override string[] readdir(const(char)[] path) {
